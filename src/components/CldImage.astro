@@ -1,0 +1,58 @@
+---
+import { cldUrl, cldSrcSet, cldPlaceholder } from '../lib/cloudinary';
+
+interface Props {
+  id: string;
+  alt: string;
+  /** Aspect ratio, width / height. Reserves space so nothing shifts on load. */
+  ratio?: number;
+  /** The `sizes` attribute — tell the browser how wide this will render. */
+  sizes?: string;
+  widths?: number[];
+  loading?: 'lazy' | 'eager';
+  fetchpriority?: 'high' | 'low' | 'auto';
+  crop?: 'fill' | 'fit' | 'limit';
+  gravity?: 'auto' | 'face' | 'faces' | 'center';
+  class?: string;
+}
+
+const {
+  id,
+  alt,
+  ratio,
+  sizes = '100vw',
+  widths = [480, 720, 1080, 1440, 1920, 2400],
+  loading = 'lazy',
+  fetchpriority = 'auto',
+  crop = 'fill',
+  gravity = 'auto',
+  class: className = '',
+} = Astro.props;
+
+const aspectRatio = ratio ? `${ratio}` : undefined;
+const src = cldUrl(id, { width: 1440, crop, gravity, aspectRatio });
+const srcset = cldSrcSet(id, widths, { crop, gravity, aspectRatio });
+---
+
+<img
+  class:list={['cld', className]}
+  src={src}
+  srcset={srcset}
+  sizes={sizes}
+  alt={alt}
+  loading={loading}
+  decoding="async"
+  fetchpriority={fetchpriority}
+  style={`background-image:url(${cldPlaceholder(id)})`}
+  onload="this.style.backgroundImage='none'"
+/>
+
+<style>
+  .cld {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background-size: cover;
+    background-position: center;
+  }
+</style>

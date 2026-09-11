@@ -1,0 +1,95 @@
+---
+import CldImage from './CldImage.astro';
+import type { Photo } from '../data/galleries';
+
+/**
+ * Justified rows, CSS only.
+ *
+ * Each tile's flex-basis and flex-grow are proportional to its aspect ratio,
+ * so tiles that land on the same row end up the same height. `--row` sets the
+ * target row height; wide images get proportionally more width.
+ */
+interface Props {
+  photos: Photo[];
+  /** Target row height in px */
+  rowHeight?: number;
+  gap?: string;
+  /** Wraps each tile in a button that opens the lightbox */
+  lightbox?: boolean;
+}
+
+const { photos, rowHeight = 340, gap = '10px', lightbox = true } = Astro.props;
+---
+
+<div class="justified" style={`--row:${rowHeight}px;--gap:${gap}`}>
+  {
+    photos.map((photo, i) =>
+      lightbox ? (
+        <button
+          class="tile"
+          type="button"
+          style={`--r:${photo.ratio}`}
+          data-lightbox-open={i}
+          aria-label={`View larger: ${photo.alt}`}
+        >
+          <CldImage
+            id={photo.id}
+            alt={photo.alt}
+            ratio={photo.ratio}
+            sizes="(min-width: 1100px) 40vw, (min-width: 700px) 50vw, 100vw"
+          />
+        </button>
+      ) : (
+        <div class="tile" style={`--r:${photo.ratio}`}>
+          <CldImage
+            id={photo.id}
+            alt={photo.alt}
+            ratio={photo.ratio}
+            sizes="(min-width: 1100px) 40vw, (min-width: 700px) 50vw, 100vw"
+          />
+        </div>
+      ),
+    )
+  }
+</div>
+
+<style>
+  .justified {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gap);
+  }
+
+  .tile {
+    /* grow in proportion to width, basis = ratio * target row height */
+    flex: calc(var(--r) * 100) 1 calc(var(--r) * var(--row));
+    aspect-ratio: var(--r);
+    min-width: 180px;
+    padding: 0;
+    border: 0;
+    margin: 0;
+    background: #f2f2f0;
+    overflow: hidden;
+    cursor: zoom-in;
+    display: block;
+  }
+
+  .tile :global(img) {
+    transition: opacity 240ms ease;
+  }
+
+  .tile:hover :global(img) { opacity: 0.88; }
+
+  /* Stops the final row from stretching its images to full width */
+  .justified::after {
+    content: '';
+    flex-grow: 1000000;
+    flex-basis: 0;
+    height: 0;
+  }
+
+  @media (max-width: 560px) {
+    .justified { --row: 220px; }
+    .tile { min-width: 100%; }
+  }
+</style>

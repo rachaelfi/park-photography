@@ -1,0 +1,17 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Page not found">
+  <section class="shell narrow centered">
+    <h1>That page isn't here</h1>
+    <p class="lede muted">The link may be old, or the gallery may have moved.</p>
+    <a class="btn" href="/portfolio/">See the portfolio</a>
+  </section>
+</Base>
+
+<style>
+  section { padding-block: clamp(4rem, 12vw, 9rem); }
+  h1 { margin-bottom: 1rem; }
+  .lede { margin-bottom: 2rem; }
+</style>

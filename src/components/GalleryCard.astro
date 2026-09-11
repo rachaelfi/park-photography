@@ -1,0 +1,56 @@
+---
+import CldImage from './CldImage.astro';
+import type { Gallery } from '../data/galleries';
+
+interface Props {
+  gallery: Gallery;
+  /** Number of photos shown as a count under the title */
+  showCount?: boolean;
+}
+
+const { gallery, showCount = true } = Astro.props;
+---
+
+<a class="card" href={`/portfolio/${gallery.slug}/`}>
+  <div class="cover">
+    <CldImage
+      id={gallery.cover.id}
+      alt={gallery.cover.alt}
+      ratio={1.33}
+      sizes="(min-width: 1000px) 33vw, (min-width: 640px) 50vw, 100vw"
+    />
+  </div>
+  <h3>{gallery.title}</h3>
+  <p class="muted">{gallery.blurb}</p>
+  {showCount && <p class="count muted">{gallery.photos.length} photographs</p>}
+</a>
+
+<style>
+  .card {
+    text-decoration: none;
+    display: block;
+  }
+
+  .cover {
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: #f2f2f0;
+    margin-bottom: 1.1rem;
+  }
+
+  .cover :global(img) {
+    transition: transform 700ms cubic-bezier(0.2, 0.6, 0.2, 1);
+  }
+
+  .card:hover .cover :global(img) { transform: scale(1.03); }
+
+  h3 { margin-bottom: 0.35rem; }
+
+  p {
+    font-size: var(--step--1);
+    margin: 0;
+    max-width: 40ch;
+  }
+
+  .count { margin-top: 0.5rem; }
+</style>

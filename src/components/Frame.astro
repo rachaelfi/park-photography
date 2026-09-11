@@ -1,0 +1,77 @@
+---
+/**
+ * Four right-angle brackets drawn over whatever is slotted in.
+ * They sit inside the element's edges, above the image, and never
+ * intercept clicks.
+ */
+interface Props {
+  /** Distance from the edge of the box */
+  inset?: string;
+  /** Length of each arm of the bracket */
+  arm?: string;
+  thickness?: string;
+  color?: string;
+  class?: string;
+}
+
+const {
+  inset = 'clamp(0.75rem, 2vw, 1.75rem)',
+  arm = 'clamp(1.75rem, 4vw, 4rem)',
+  thickness = '1px',
+  color = 'rgba(255, 255, 255, 0.92)',
+  class: className = '',
+} = Astro.props;
+---
+
+<div
+  class:list={['frame', className]}
+  style={`--inset:${inset};--arm:${arm};--t:${thickness};--c:${color}`}
+>
+  <slot />
+  <span class="corner tl" aria-hidden="true"></span>
+  <span class="corner tr" aria-hidden="true"></span>
+  <span class="corner bl" aria-hidden="true"></span>
+  <span class="corner br" aria-hidden="true"></span>
+</div>
+
+<style>
+  .frame {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .corner {
+    position: absolute;
+    width: var(--arm);
+    height: var(--arm);
+    pointer-events: none;
+    z-index: 2;
+    /* Keeps the hairline readable over pale areas of a photo */
+    filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.28));
+  }
+
+  .tl {
+    top: var(--inset);
+    left: var(--inset);
+    border-top: var(--t) solid var(--c);
+    border-left: var(--t) solid var(--c);
+  }
+  .tr {
+    top: var(--inset);
+    right: var(--inset);
+    border-top: var(--t) solid var(--c);
+    border-right: var(--t) solid var(--c);
+  }
+  .bl {
+    bottom: var(--inset);
+    left: var(--inset);
+    border-bottom: var(--t) solid var(--c);
+    border-left: var(--t) solid var(--c);
+  }
+  .br {
+    bottom: var(--inset);
+    right: var(--inset);
+    border-bottom: var(--t) solid var(--c);
+    border-right: var(--t) solid var(--c);
+  }
+</style>

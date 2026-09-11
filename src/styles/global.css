@@ -1,0 +1,136 @@
+/* ---------------------------------------------------------------
+   Park Photography — design tokens
+   Base is white; the only saturated colour is a muted evergreen
+   used for links, focus rings and the small booking accents.
+---------------------------------------------------------------- */
+:root {
+  --paper: #ffffff;
+  --ink: #1d1d1d;
+  --ink-soft: #6e7370;
+  --hairline: #e6e6e3;
+  --evergreen: #3b5348;
+  --evergreen-deep: #2c3f36;
+
+  --sans: 'Instrument Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --serif: 'Instrument Serif', ui-serif, Georgia, 'Times New Roman', serif;
+
+  /* Type scale — 1.25 (major third), fluid between 380px and 1400px */
+  --step--1: clamp(0.8rem, 0.77rem + 0.14vw, 0.875rem);
+  --step-0: clamp(0.95rem, 0.91rem + 0.2vw, 1.05rem);
+  --step-1: clamp(1.2rem, 1.1rem + 0.5vw, 1.5rem);
+  --step-2: clamp(1.6rem, 1.35rem + 1.2vw, 2.4rem);
+  --step-3: clamp(2.1rem, 1.6rem + 2.4vw, 3.75rem);
+
+  --gutter: clamp(1.25rem, 4vw, 3.5rem);
+  --measure: 62ch;
+  --shell: 1560px;
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: var(--step-0);
+  line-height: 1.65;
+  font-feature-settings: 'kern' 1;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { display: block; max-width: 100%; }
+
+a { color: inherit; }
+
+h1, h2, h3 {
+  font-family: var(--serif);
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+h1 { font-size: var(--step-3); }
+h2 { font-size: var(--step-2); }
+h3 { font-size: var(--step-1); }
+
+p { margin: 0 0 1.1em; max-width: var(--measure); }
+
+.shell {
+  width: 100%;
+  max-width: var(--shell);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.narrow { max-width: 72ch; margin-inline: auto; }
+
+.centered { text-align: center; }
+.centered p { margin-inline: auto; }
+
+.lede {
+  font-size: var(--step-1);
+  line-height: 1.45;
+  color: var(--ink);
+}
+
+.muted { color: var(--ink-soft); }
+
+/* Buttons ---------------------------------------------------- */
+.btn {
+  display: inline-block;
+  padding: 0.85em 2.1em;
+  border: 1px solid var(--evergreen);
+  background: var(--evergreen);
+  color: #fff;
+  font-size: var(--step--1);
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  border-radius: 0;
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease;
+}
+.btn:hover { background: var(--evergreen-deep); border-color: var(--evergreen-deep); }
+
+.btn-quiet {
+  background: transparent;
+  color: var(--evergreen);
+}
+.btn-quiet:hover { background: var(--evergreen); color: #fff; }
+
+/* A link that underlines on hover only, offset off the baseline */
+.link {
+  text-decoration: none;
+  border-bottom: 1px solid var(--hairline);
+  padding-bottom: 2px;
+  transition: border-color 160ms ease;
+}
+.link:hover { border-color: var(--evergreen); }
+
+:where(a, button, input, textarea, select):focus-visible {
+  outline: 2px solid var(--evergreen);
+  outline-offset: 3px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+section { padding-block: clamp(3.5rem, 8vw, 7rem); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}

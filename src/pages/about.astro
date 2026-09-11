@@ -1,0 +1,74 @@
+---
+import Base from '../layouts/Base.astro';
+import CldImage from '../components/CldImage.astro';
+import Frame from '../components/Frame.astro';
+import { site } from '../data/site';
+---
+
+<Base
+  title="About"
+  description={`About ${site.photographer}, a photographer working in ${site.baseLocation}.`}
+>
+  <section class="about">
+    <div class="shell layout">
+      <div class="portrait">
+        <Frame inset="0.75rem" arm="2rem">
+          <CldImage
+            id="parkphotography/about/portrait"
+            alt={`${site.photographer} standing outdoors holding a camera`}
+            ratio={0.8}
+            sizes="(min-width: 900px) 40vw, 100vw"
+            gravity="face"
+            loading="eager"
+          />
+        </Frame>
+      </div>
+
+      <div class="bio">
+        <h1>{site.photographer}</h1>
+        <p class="lede">
+          I've been photographing people outdoors for eleven years, most of it within
+          a hundred miles of Lake Michigan.
+        </p>
+        <p class="muted">
+          I started out shooting landscapes at five in the morning, which turned out to be
+          good training for weddings: you learn to wait, and to work with whatever light
+          you get. That's still how I shoot. I stay out of the way, I don't over-direct,
+          and the pictures I like best are the ones nobody noticed me take.
+        </p>
+        <p class="muted">
+          Weddings are about fifteen a year, which keeps every one of them from feeling
+          like an assembly line. In between there are family sessions, couples who just
+          want a decent picture together for once, and long solo mornings out in the dunes.
+        </p>
+        <p class="muted">
+          I live in {site.baseLocation} with my wife and a very slow beagle named Juno.
+          I travel often and I'm happy to go further.
+        </p>
+        <a class="btn" href="/contact/">Get in touch</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .layout {
+    display: grid;
+    gap: clamp(2rem, 5vw, 4.5rem);
+    align-items: start;
+  }
+
+  @media (min-width: 900px) {
+    .layout { grid-template-columns: 0.85fr 1fr; }
+    .portrait { position: sticky; top: 9rem; }
+  }
+
+  .portrait :global(.frame) {
+    aspect-ratio: 4 / 5;
+    background: #f2f2f0;
+  }
+
+  .bio h1 { margin-bottom: 1rem; }
+  .bio .lede { margin-bottom: 1.5rem; }
+  .bio .btn { margin-top: 1rem; }
+</style>

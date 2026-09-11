@@ -1,0 +1,103 @@
+---
+import Frame from './Frame.astro';
+import CldImage from './CldImage.astro';
+import type { Photo } from '../data/galleries';
+
+interface Props {
+  slides: Photo[];
+  /** Seconds each slide holds before crossfading */
+  interval?: number;
+}
+
+const { slides, interval = 6 } = Astro.props;
+---
+
+<div class="hero shell">
+  <Frame class="stage">
+    <div class="slides" data-slideshow data-interval={interval * 1000}>
+      {
+        slides.map((slide, i) => (
+          <figure class="slide" data-active={i === 0 ? '' : undefined} aria-hidden={i === 0 ? 'false' : 'true'}>
+            <CldImage
+              id={slide.id}
+              alt={slide.alt}
+              sizes="(min-width: 1600px) 1560px, 100vw"
+              loading={i === 0 ? 'eager' : 'lazy'}
+              fetchpriority={i === 0 ? 'high' : 'auto'}
+            />
+          </figure>
+        ))
+      }
+    </div>
+  </Frame>
+</div>
+
+<style>
+  .hero { padding-top: clamp(1rem, 2vw, 1.75rem); }
+
+  .stage {
+    position: relative;
+    height: min(74vh, 760px);
+    min-height: 380px;
+    overflow: hidden;
+    background: #f2f2f0;
+  }
+
+  .slides,
+  .slide {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+  }
+
+  .slide {
+    opacity: 0;
+    transition: opacity 1200ms ease;
+  }
+
+  .slide[data-active] { opacity: 1; }
+
+  @media (max-width: 640px) {
+    .stage { height: 68vh; }
+  }
+</style>
+
+<script>
+  const shows = document.querySelectorAll<HTMLElement>('[data-slideshow]');
+
+  shows.forEach((show) => {
+    const slides = Array.from(show.querySelectorAll<HTMLElement>('.slide'));
+    if (slides.length < 2) return;
+
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (reduce.matches) return;
+
+    const wait = Number(show.dataset.interval ?? 6000);
+    let index = 0;
+    let timer: number | undefined;
+
+    const show_next = () => {
+      slides[index].removeAttribute('data-active');
+      slides[index].setAttribute('aria-hidden', 'true');
+      index = (index + 1) % slides.length;
+      slides[index].setAttribute('data-active', '');
+      slides[index].setAttribute('aria-hidden', 'false');
+    };
+
+    const start = () => {
+      stop();
+      timer = window.setInterval(show_next, wait);
+    };
+    const stop = () => {
+      if (timer) window.clearInterval(timer);
+      timer = undefined;
+    };
+
+    // Don't burn cycles or bandwidth on a hidden tab
+    document.addEventListener('visibilitychange', () =>
+      document.hidden ? stop() : start(),
+    );
+
+    start();
+  });
+</script>

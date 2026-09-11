@@ -1,0 +1,36 @@
+---
+import Base from '../../layouts/Base.astro';
+import GalleryCard from '../../components/GalleryCard.astro';
+import { galleries } from '../../data/galleries';
+---
+
+<Base
+  title="Portfolio"
+  description="Galleries of nature, portrait and wedding photography by Park Photography."
+>
+  <section class="head">
+    <div class="shell narrow centered">
+      <h1>Portfolio</h1>
+      <p class="lede muted">
+        Three collections. Each one opens into a full gallery.
+      </p>
+    </div>
+  </section>
+
+  <div class="shell">
+    <div class="grid">
+      {galleries.map((gallery) => <GalleryCard gallery={gallery} />)}
+    </div>
+  </div>
+</Base>
+
+<style>
+  .head { padding-block: clamp(2.5rem, 6vw, 4.5rem) clamp(2rem, 4vw, 3rem); }
+  .head h1 { margin-bottom: 0.75rem; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: clamp(1.5rem, 3vw, 3rem);
+  }
+</style>

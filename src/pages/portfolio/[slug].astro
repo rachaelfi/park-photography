@@ -1,0 +1,56 @@
+---
+import Base from '../../layouts/Base.astro';
+import JustifiedGrid from '../../components/JustifiedGrid.astro';
+import Lightbox from '../../components/Lightbox.astro';
+import { galleries } from '../../data/galleries';
+import { cldUrl } from '../../lib/cloudinary';
+
+export function getStaticPaths() {
+  return galleries.map((gallery) => ({
+    params: { slug: gallery.slug },
+    props: { gallery },
+  }));
+}
+
+const { gallery } = Astro.props;
+
+const index = galleries.findIndex((g) => g.slug === gallery.slug);
+const next = galleries[(index + 1) % galleries.length];
+---
+
+<Base
+  title={gallery.title}
+  description={gallery.blurb}
+  ogImage={cldUrl(gallery.cover.id, { width: 1200, aspectRatio: '1.91' })}
+>
+  <section class="head">
+    <div class="shell narrow centered">
+      <h1>{gallery.title}</h1>
+      <p class="lede muted">{gallery.intro}</p>
+    </div>
+  </section>
+
+  <div class="shell">
+    <JustifiedGrid photos={gallery.photos} />
+  </div>
+
+  <Lightbox photos={gallery.photos} />
+
+  <nav class="onward shell centered" aria-label="Gallery">
+    <a class="link" href="/portfolio/">All galleries</a>
+    <a class="link next" href={`/portfolio/${next.slug}/`}>{next.title}</a>
+  </nav>
+</Base>
+
+<style>
+  .head { padding-block: clamp(2.5rem, 6vw, 4rem) clamp(1.75rem, 3vw, 2.5rem); }
+  .head h1 { margin-bottom: 0.75rem; }
+
+  .onward {
+    display: flex;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-block: clamp(2.5rem, 5vw, 4rem) 0;
+    font-size: var(--step--1);
+  }
+</style>
