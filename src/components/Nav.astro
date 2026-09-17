@@ -1,10 +1,22 @@
 ---
 import { site } from '../data/site';
+import { galleryDefinitions } from '../data/galleries';
 
-const links = [
+/** The monogram sits between these two groups on desktop. */
+const before = [
   { href: '/', label: 'Home' },
   { href: '/about/', label: 'About' },
-  { href: '/portfolio/', label: 'Portfolio' },
+];
+
+const after = [
+  {
+    href: '/portfolio/',
+    label: 'Portfolio',
+    children: galleryDefinitions.map((gallery) => ({
+      href: `/portfolio/${gallery.slug}/`,
+      label: gallery.title,
+    })),
+  },
   { href: '/contact/', label: 'Contact' },
 ];
 
@@ -13,50 +25,107 @@ const isActive = (href: string) =>
   href === '/' ? path === '/' : path.startsWith(href);
 ---
 
-<header class="masthead">
-  <a class="wordmark" href="/">{site.wordmark}</a>
+<header class="masthead" data-masthead>
   <nav aria-label="Primary">
-    <ul>
-      {
-        links.map((link) => (
-          <li>
-            <a href={link.href} aria-current={isActive(link.href) ? 'page' : undefined}>
-              {link.label}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
+    <!-- display: contents on desktop, so the two lists stay direct grid
+         children; on mobile this becomes the drop-down panel. -->
+    <div class="menu" id="site-menu" data-menu>
+      <ul class="side left">
+        {
+          before.map((link) => (
+            <li>
+              <a href={link.href} aria-current={isActive(link.href) ? 'page' : undefined}>
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <ul class="side right">
+        {
+          after.map((link) => (
+            <li class={link.children ? 'pp-has-sub' : undefined}>
+              <a href={link.href} aria-current={isActive(link.href) ? 'page' : undefined}>
+                {link.label}
+              </a>
+
+              {link.children && (
+                <ul class="pp-sub">
+                  {link.children.map((child) => (
+                    <li>
+                      <a href={child.href} aria-current={path === child.href ? 'page' : undefined}>
+                        {child.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <a class="mark" href="/" aria-label={`${site.name} — home`}>
+      <span class="glyph" aria-hidden="true"><span class="flip">P</span><span>P</span></span>
+    </a>
   </nav>
+
+  <p class="wordmark"><a href="/">{site.wordmark}</a></p>
+
+  <button
+    class="burger"
+    type="button"
+    data-burger
+    aria-controls="site-menu"
+    aria-expanded="false"
+    aria-label="Menu"
+  >
+    <span class="bar" aria-hidden="true"></span>
+    <span class="bar" aria-hidden="true"></span>
+    <span class="bar" aria-hidden="true"></span>
+  </button>
 </header>
 
 <style>
   .masthead {
+    /* Optical nudge for the wordmark. The monogram's mirrored P makes its
+       visual centre sit a hair right of its layout box. */
+    --wordmark-shift: -0.035em;
+
     position: sticky;
     top: 0;
     z-index: 50;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.4rem;
-    padding: clamp(1rem, 2.5vw, 1.6rem) var(--gutter) clamp(0.8rem, 2vw, 1.2rem);
+    gap: 0.35rem;
+    padding: clamp(0.9rem, 2.2vw, 1.4rem) var(--gutter) clamp(0.8rem, 2vw, 1.15rem);
     background: rgba(255, 255, 255, 0.94);
     backdrop-filter: saturate(140%) blur(8px);
     border-bottom: 1px solid var(--hairline);
   }
 
-  .wordmark {
-    font-family: var(--serif);
-    font-size: clamp(1.35rem, 2.4vw, 1.85rem);
-    letter-spacing: 0.01em;
-    text-decoration: none;
-    line-height: 1;
+  nav {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    column-gap: clamp(1.1rem, 3.5vw, 2.75rem);
+    width: 100%;
   }
 
-  nav ul {
+  .menu { display: contents; }
+
+  /* Explicit placement, because the two lists share a wrapper and so can't
+     sit either side of the monogram by source order alone. */
+  .left { grid-column: 1; justify-content: flex-end; }
+  .mark { grid-column: 2; }
+  .right { grid-column: 3; justify-content: flex-start; }
+
+  .side {
     display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
+    align-items: center;
     gap: clamp(1.1rem, 3.5vw, 2.75rem);
     margin: 0;
     padding: 0;
@@ -80,4 +149,249 @@ const isActive = (href: string) =>
     color: var(--ink);
     border-bottom-color: var(--evergreen);
   }
+
+  .mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    color: var(--ink);
+    line-height: 1;
+    transition: color 160ms ease;
+  }
+
+  .mark:hover { color: var(--evergreen); }
+
+  .glyph {
+    display: inline-flex;
+    font-family: var(--serif);
+    font-size: clamp(1.55rem, 3vw, 2.15rem);
+    letter-spacing: 0;
+  }
+
+  .flip {
+    display: inline-block;
+    transform: scaleX(-1);
+    margin-right: -0.07em;
+  }
+
+  .wordmark {
+    margin: 0;
+    max-width: none;
+    font-size: var(--step--1);
+    letter-spacing: 0.14em;
+    color: var(--ink-soft);
+    transform: translateX(var(--wordmark-shift));
+  }
+
+  .wordmark a {
+    text-decoration: none;
+    padding: 0;
+    border: 0;
+    font-size: inherit;
+    letter-spacing: inherit;
+  }
+
+  /* Hidden on desktop; the media query below turns it on. */
+  .burger { display: none; }
+
+  /* ---------- Phone ---------- */
+
+  @media (max-width: 640px) {
+    .masthead {
+      position: sticky;
+      align-items: flex-start;
+      gap: 0.1rem;
+      padding: 0.7rem var(--gutter) 0.6rem;
+    }
+
+    nav { display: block; width: auto; }
+
+    .mark { justify-content: flex-start; }
+
+    .glyph { font-size: 1.7rem; }
+
+    /* The monogram carries the branding on its own here — the wordmark
+       repeats it and costs a row of sticky header. */
+    .wordmark { display: none; }
+
+    .burger {
+      position: absolute;
+      top: 50%;
+      right: var(--gutter);
+      transform: translateY(-50%);
+
+      display: grid;
+      align-content: center;
+      gap: 6px;
+      width: 44px;
+      height: 44px;
+      padding: 0 8px;
+      border: 0;
+      background: none;
+      cursor: pointer;
+    }
+
+    .burger .bar {
+      display: block;
+      width: 100%;
+      height: 1px;
+      background: var(--ink);
+      transition: transform 200ms ease, opacity 200ms ease;
+    }
+
+    /* Open: the outer bars fold into a cross and the middle one fades.
+       7px is the bar height plus the gap, so each outer bar travels exactly
+       to the centre line. */
+    .masthead[data-open] .burger .bar:first-child {
+      transform: translateY(7px) rotate(45deg);
+    }
+
+    .masthead[data-open] .burger .bar:nth-child(2) {
+      opacity: 0;
+    }
+
+    .masthead[data-open] .burger .bar:last-child {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+
+    .menu {
+      display: grid;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      gap: 0;
+      padding: 0.35rem var(--gutter) 1.1rem;
+      background: rgba(255, 255, 255, 0.98);
+      border-bottom: 1px solid var(--hairline);
+
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-0.4rem);
+      pointer-events: none;
+      transition: opacity 180ms ease, transform 180ms ease, visibility 180ms ease;
+    }
+
+    .masthead[data-open] .menu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .side {
+      display: grid;
+      gap: 0;
+      width: 100%;
+    }
+
+    .left,
+    .right {
+      grid-column: 1;
+      justify-content: stretch;
+    }
+
+    nav a {
+      display: block;
+      padding: 0.85rem 0;
+      font-size: var(--step-0);
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    nav a[aria-current='page'] {
+      border-bottom-color: var(--hairline);
+      color: var(--evergreen);
+    }
+
+    /* No nested menu on touch — Portfolio is a plain link here. */
+    .pp-sub { display: none !important; }
+  }
 </style>
+
+<style is:global>
+  .pp-has-sub { position: relative; }
+
+  .pp-sub {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-0.35rem);
+    z-index: 60;
+
+    display: grid;
+    gap: 0.1rem;
+    min-width: max-content;
+    margin: 0;
+    padding: 1.05rem 1.4rem 1.1rem;
+
+    list-style: none;
+    background: rgba(255, 255, 255, 0.98);
+    border: 1px solid var(--hairline);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06);
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 160ms ease, visibility 160ms ease, transform 160ms ease;
+  }
+
+  .pp-sub li { list-style: none; margin: 0; padding: 0; }
+
+  .pp-sub a {
+    display: block;
+    padding: 0.32rem 0;
+    white-space: nowrap;
+    border-bottom: 0;
+  }
+
+  .pp-sub a:hover { color: var(--evergreen); }
+
+  .pp-has-sub:hover > .pp-sub,
+  .pp-has-sub:focus-within > .pp-sub {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+  }
+</style>
+
+<script>
+  const masthead = document.querySelector<HTMLElement>('[data-masthead]');
+  const burger = masthead?.querySelector<HTMLButtonElement>('[data-burger]');
+  const menu = masthead?.querySelector<HTMLElement>('[data-menu]');
+
+  if (masthead && burger && menu) {
+    const setOpen = (open: boolean) => {
+      masthead.toggleAttribute('data-open', open);
+      burger.setAttribute('aria-expanded', String(open));
+    };
+
+    burger.addEventListener('click', () => {
+      setOpen(!masthead.hasAttribute('data-open'));
+    });
+
+    // Following a link should leave the menu closed behind you.
+    menu.addEventListener('click', (event) => {
+      if ((event.target as HTMLElement).closest('a')) setOpen(false);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && masthead.hasAttribute('data-open')) {
+        setOpen(false);
+        burger.focus();
+      }
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!masthead.contains(event.target as Node)) setOpen(false);
+    });
+
+    // Rotating to landscape can cross the breakpoint with the panel open,
+    // which would leave the desktop nav in an odd state.
+    window.matchMedia('(min-width: 641px)').addEventListener('change', (event) => {
+      if (event.matches) setOpen(false);
+    });
+  }
+</script>

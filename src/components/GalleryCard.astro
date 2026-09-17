@@ -6,19 +6,25 @@ interface Props {
   gallery: Gallery;
   /** Number of photos shown as a count under the title */
   showCount?: boolean;
+  /** Bigger, centred titles — used on the portfolio index */
+  emphasis?: boolean;
 }
 
-const { gallery, showCount = true } = Astro.props;
+const { gallery, showCount = true, emphasis = false } = Astro.props;
 ---
 
-<a class="card" href={`/portfolio/${gallery.slug}/`}>
+<a class:list={['card', { emphasis }]} href={`/portfolio/${gallery.slug}/`}>
   <div class="cover">
-    <CldImage
-      id={gallery.cover.id}
-      alt={gallery.cover.alt}
-      ratio={1.33}
-      sizes="(min-width: 1000px) 33vw, (min-width: 640px) 50vw, 100vw"
-    />
+    {
+      gallery.cover && (
+        <CldImage
+          id={gallery.cover.id}
+          alt={gallery.cover.alt}
+          ratio={1.33}
+          sizes="(min-width: 1000px) 33vw, (min-width: 640px) 50vw, 100vw"
+        />
+      )
+    }
   </div>
   <h3>{gallery.title}</h3>
   <p class="muted">{gallery.blurb}</p>
@@ -53,4 +59,18 @@ const { gallery, showCount = true } = Astro.props;
   }
 
   .count { margin-top: 0.5rem; }
+
+  .emphasis {
+    text-align: center;
+  }
+
+  .emphasis h3 {
+    font-size: var(--step-2);
+    letter-spacing: 0.01em;
+    margin-bottom: 0.55rem;
+  }
+
+  .emphasis p {
+    margin-inline: auto;
+  }
 </style>

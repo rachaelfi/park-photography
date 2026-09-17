@@ -1,8 +1,14 @@
 ---
 import Base from '../layouts/Base.astro';
 import CldImage from '../components/CldImage.astro';
-import Frame from '../components/Frame.astro';
+import { ABOUT_FOLDER } from '../data/galleries';
+import { firstInFolder } from '../lib/cloudinary-assets';
 import { site } from '../data/site';
+
+const portrait = await firstInFolder(
+  ABOUT_FOLDER,
+  `${site.photographer} photographed outdoors`,
+);
 ---
 
 <Base
@@ -12,23 +18,25 @@ import { site } from '../data/site';
   <section class="about">
     <div class="shell layout">
       <div class="portrait">
-        <Frame inset="0.75rem" arm="2rem">
-          <CldImage
-            id="parkphotography/about/portrait"
-            alt={`${site.photographer} standing outdoors holding a camera`}
-            ratio={0.8}
-            sizes="(min-width: 900px) 40vw, 100vw"
-            gravity="face"
-            loading="eager"
-          />
-        </Frame>
+        {
+          portrait && (
+            <CldImage
+              id={portrait.id}
+              alt={portrait.alt}
+              ratio={0.8}
+              sizes="(min-width: 900px) 40vw, 100vw"
+              gravity="face"
+              loading="eager"
+            />
+          )
+        }
       </div>
 
       <div class="bio">
         <h1>{site.photographer}</h1>
         <p class="lede">
-          I've been photographing people outdoors for eleven years, most of it within
-          a hundred miles of Lake Michigan.
+          I've been photographing people outdoors for eight years, most of it within the beautiful landscapes of
+          Utah.
         </p>
         <p class="muted">
           I started out shooting landscapes at five in the morning, which turned out to be
@@ -37,12 +45,11 @@ import { site } from '../data/site';
           and the pictures I like best are the ones nobody noticed me take.
         </p>
         <p class="muted">
-          Weddings are about fifteen a year, which keeps every one of them from feeling
-          like an assembly line. In between there are family sessions, couples who just
-          want a decent picture together for once, and long solo mornings out in the dunes.
+          In between weddings there are family sessions, and couples who just
+          want a decent picture together for once. I also do graduation and professional photoshoots.
         </p>
         <p class="muted">
-          I live in {site.baseLocation} with my wife and a very slow beagle named Juno.
+          I live in {site.baseLocation} with my wife and golden retriever named Coco.
           I travel often and I'm happy to go further.
         </p>
         <a class="btn" href="/contact/">Get in touch</a>
@@ -63,9 +70,18 @@ import { site } from '../data/site';
     .portrait { position: sticky; top: 9rem; }
   }
 
-  .portrait :global(.frame) {
+  /* The Frame wrapper is gone, so the aspect ratio belongs here now. */
+  .portrait {
     aspect-ratio: 4 / 5;
+    overflow: hidden;
     background: #f2f2f0;
+  }
+
+  .portrait :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
   .bio h1 { margin-bottom: 1rem; }

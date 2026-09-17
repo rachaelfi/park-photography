@@ -1,25 +1,27 @@
 ---
 import Base from '../../layouts/Base.astro';
 import GalleryCard from '../../components/GalleryCard.astro';
-import { galleries } from '../../data/galleries';
+import { loadGalleries } from '../../data/galleries';
+
+const galleries = await loadGalleries();
 ---
 
 <Base
   title="Portfolio"
-  description="Galleries of nature, portrait and wedding photography by Park Photography."
+  description="Galleries of nature, portrait, engagement, wedding and graduation photography by Park Photography."
 >
   <section class="head">
     <div class="shell narrow centered">
       <h1>Portfolio</h1>
       <p class="lede muted">
-        Three collections. Each one opens into a full gallery.
+        Each collection opens into a full gallery.
       </p>
     </div>
   </section>
 
   <div class="shell">
     <div class="grid">
-      {galleries.map((gallery) => <GalleryCard gallery={gallery} />)}
+      {galleries.map((gallery) => <GalleryCard gallery={gallery} emphasis />)}
     </div>
   </div>
 </Base>
@@ -32,5 +34,35 @@ import { galleries } from '../../data/galleries';
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: clamp(1.5rem, 3vw, 3rem);
+  }
+
+  /* Three across, and any leftovers centred underneath rather than left
+     aligned. Six tracks with each card spanning two makes half-track offsets
+     possible, which is what centring a row of two requires.
+
+     Cards come from GalleryCard, so they carry that component's style scope
+     rather than this one — :global is needed to reach them. */
+  @media (min-width: 1000px) {
+    .grid {
+      grid-template-columns: repeat(6, 1fr);
+    }
+
+    .grid > :global(.card) {
+      grid-column: span 2;
+    }
+
+    /* Trailing row of two: shift in by one track each side. */
+    .grid > :global(.card:nth-child(4):nth-last-child(2)) {
+      grid-column: 2 / span 2;
+    }
+
+    .grid > :global(.card:nth-child(5):nth-last-child(1)) {
+      grid-column: 4 / span 2;
+    }
+
+    /* Trailing row of one: dead centre. */
+    .grid > :global(.card:nth-child(4):nth-last-child(1)) {
+      grid-column: 3 / span 2;
+    }
   }
 </style>

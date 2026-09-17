@@ -2,12 +2,16 @@
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import GalleryCard from '../components/GalleryCard.astro';
-import { galleries, heroSlides } from '../data/galleries';
+import { loadGalleries, HERO_FOLDER } from '../data/galleries';
+import { photosInFolder } from '../lib/cloudinary-assets';
 import { site } from '../data/site';
+
+const galleries = await loadGalleries();
+const heroSlides = await photosInFolder(HERO_FOLDER, site.tagline);
 ---
 
 <Base title="" description={site.tagline}>
-  <Hero slides={heroSlides} />
+  {heroSlides.length > 0 && <Hero slides={heroSlides} />}
 
   <section class="intro">
     <div class="shell narrow centered">
@@ -24,42 +28,10 @@ import { site } from '../data/site';
 
   <section class="work">
     <div class="shell">
-      <h2 class="centered">Three kinds of work</h2>
+      <h2 class="centered">The work</h2>
       <div class="grid">
         {galleries.map((gallery) => <GalleryCard gallery={gallery} showCount={false} />)}
       </div>
-    </div>
-  </section>
-
-  <section class="booking">
-    <div class="shell narrow">
-      <h2 class="centered">Booking, start to finish</h2>
-      <ol>
-        <li>
-          <h3>Send a note</h3>
-          <p class="muted">
-            Tell me the date, the place, and roughly what you have in mind. I reply
-            within two days with availability and full pricing.
-          </p>
-        </li>
-        <li>
-          <h3>Meet first</h3>
-          <p class="muted">
-            A call or a coffee, no charge. We talk through the day, the locations, and
-            how much coverage you actually need.
-          </p>
-        </li>
-        <li>
-          <h3>Hold the date</h3>
-          <p class="muted">
-            A signed agreement and a 25% retainer reserve it. The balance is due a week
-            before. Galleries are delivered in four to six weeks.
-          </p>
-        </li>
-      </ol>
-      <p class="centered">
-        <a class="btn btn-quiet" href="/contact/">Start with a note</a>
-      </p>
     </div>
   </section>
 </Base>
@@ -76,7 +48,10 @@ import { site } from '../data/site';
     margin-top: 1.25rem;
   }
 
-  .work { border-top: 1px solid var(--hairline); }
+  .work {
+    border-top: 1px solid var(--hairline);
+    padding-bottom: clamp(1rem, 3vw, 2rem);
+  }
 
   .work h2 { margin-bottom: clamp(2rem, 4vw, 3rem); }
 
@@ -85,36 +60,4 @@ import { site } from '../data/site';
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: clamp(1.5rem, 3vw, 2.75rem);
   }
-
-  .booking { border-top: 1px solid var(--hairline); }
-
-  .booking h2 { margin-bottom: clamp(2rem, 4vw, 3rem); }
-
-  ol {
-    counter-reset: step;
-    list-style: none;
-    margin: 0 0 2.5rem;
-    padding: 0;
-    display: grid;
-    gap: 2rem;
-  }
-
-  li {
-    counter-increment: step;
-    display: grid;
-    grid-template-columns: 2.5rem 1fr;
-    gap: 1rem;
-    align-items: start;
-  }
-
-  li::before {
-    content: counter(step);
-    font-family: var(--serif);
-    font-size: var(--step-1);
-    color: var(--evergreen);
-    line-height: 1.2;
-  }
-
-  li h3 { margin-bottom: 0.35rem; }
-  li p { margin: 0; }
 </style>

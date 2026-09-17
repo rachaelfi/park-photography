@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import { site } from '../data/site';
-import { galleries } from '../data/galleries';
+import { galleryDefinitions as galleries } from '../data/galleries';
 ---
 
 <Base
@@ -19,10 +19,10 @@ import { galleries } from '../data/galleries';
         <p class="address">
           <a class="link" href={`mailto:${site.email}`}>{site.email}</a>
         </p>
-        <p class="muted small">{site.phone} &nbsp;&middot;&nbsp; {site.baseLocation}</p>
+        <p class="muted small"> &nbsp;&middot;&nbsp; {site.baseLocation}</p>
       </header>
 
-      <form id="contact-form" method="POST" action="/api/contact" novalidate>
+      <form id="contact-form" method="POST" action="/api/contact" novalidate data-email={site.email}>
         <div class="row">
           <label for="name">Your name</label>
           <input id="name" name="name" type="text" autocomplete="name" required />
@@ -175,8 +175,7 @@ import { galleries } from '../data/galleries';
       status.textContent = 'Message sent. I\u2019ll reply within two business days.';
     } catch {
       status.dataset.state = 'error';
-      status.textContent =
-        'That didn\u2019t send. Email hello@parkphotography.net directly and I\u2019ll pick it up there.';
+      status.textContent = `That didn\u2019t send. Email ${form.dataset.email} directly and I\u2019ll pick it up there.`;
     } finally {
       button && (button.disabled = false);
     }

@@ -6,7 +6,7 @@
  * f_auto (AVIF/WebP where supported) and q_auto.
  */
 const CLOUD_NAME =
-  import.meta.env.PUBLIC_CLOUDINARY_CLOUD_NAME ?? 'zqexcwzv';
+  import.meta.env.PUBLIC_CLOUDINARY_CLOUD_NAME ?? 'demo';
 
 export interface CldOptions {
   /** Target width in pixels */

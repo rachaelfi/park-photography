@@ -1,0 +1,46 @@
+---
+import { site } from '../data/site';
+
+interface Props {
+  size?: string;
+  class?: string;
+}
+
+const { size = 'clamp(1.55rem, 3vw, 2.15rem)', class: className = '' } =
+  Astro.props;
+---
+
+
+  class:list={['mark', className]}
+  href="/"
+  aria-label={`${site.name} — home`}
+  style={`--size:${size}`}
+>
+  <span class="glyph" aria-hidden="true"><span class="flip">P</span><span>P</span></span>
+</a>
+
+<style>
+  .mark {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    color: var(--ink);
+    line-height: 1;
+    transition: color 160ms ease;
+  }
+
+  .mark:hover { color: var(--evergreen); }
+
+  .glyph {
+    display: inline-flex;
+    font-family: var(--serif);
+    font-size: var(--size);
+    letter-spacing: 0;
+  }
+
+  .flip {
+    display: inline-block;
+    transform: scaleX(-1);
+    margin-right: -0.07em;
+  }
+</style>

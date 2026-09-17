@@ -1,0 +1,76 @@
+---
+import CldImage from './CldImage.astro';
+import type { Photo } from '../lib/cloudinary-assets';
+
+interface Props {
+  photos: Photo[];
+}
+
+const { photos } = Astro.props;
+---
+
+<div class="masonry">
+  {
+    photos.map((photo, index) => (
+      <button
+        class="cell"
+        type="button"
+        data-lightbox-index={index}
+        aria-label={`Open ${photo.alt} full size`}
+      >
+        <CldImage
+          id={photo.id}
+          alt={photo.alt}
+          ratio={photo.ratio}
+          sizes="(min-width: 1200px) 25vw, (min-width: 900px) 33vw, (min-width: 600px) 50vw, 100vw"
+          loading={index < 4 ? 'eager' : 'lazy'}
+        />
+      </button>
+    ))
+  }
+</div>
+
+<style>
+  .masonry {
+    /* --gap is now the only spacing in play. Photos stack directly under one
+       another within a column, so there is no row alignment to open up space
+       around the shorter ones. */
+    --gap: 15px;
+
+    column-count: 1;
+    column-gap: var(--gap);
+    max-width: 1416px;
+    margin-inline: auto;
+  }
+
+  @media (min-width: 600px) { .masonry { column-count: 2; } }
+  @media (min-width: 900px) { .masonry { column-count: 3; } }
+  @media (min-width: 1200px) { .masonry { column-count: 4; } }
+
+  .cell {
+    /* Keeps a photo from being split across a column break. */
+    break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+
+    display: block;
+    width: 100%;
+    margin: 0 0 var(--gap);
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: zoom-in;
+  }
+
+  /* Full column width, natural height — exactly what the reference page does.
+     No cap, so proportions are never altered. */
+  .cell :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .cell:focus-visible {
+    outline: 2px solid var(--evergreen);
+    outline-offset: 4px;
+  }
+</style>
