@@ -1,6 +1,6 @@
 # parkphotography.net
 
-Portfolio site for Park Photography — weddings, portraits, and landscapes along Lake Michigan.
+Portfolio site for Park Photography — weddings, portraits, and landscapes.
 
 Built with **Astro**, images served by **Cloudinary**, hosted on **Cloudflare Pages**. The site is fully static: no CMS and no client framework. The only JavaScript on the page runs the hero slideshow, the gallery lightbox, the mobile menu, and the contact form.
 
